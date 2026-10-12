@@ -2,6 +2,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const path = require("node:path");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -29,9 +30,15 @@ const swaggerSpec = swaggerJsdoc({
             version: "1.0.0",
             description: "Signup and login API"
         },
-        servers: [{ url: "http://localhost:5000" }]
+        // A relative URL keeps Try it out on the same host and port as Swagger UI.
+        servers: [{ url: "/" }]
     },
-    apis: ["./server.js"]
+    // Resolve from this file so the API comments are found regardless of cwd.
+    apis: [path.join(__dirname, "server.js")]
+});
+
+app.get("/api-docs.json", (_req, res) => {
+    res.json(swaggerSpec);
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
